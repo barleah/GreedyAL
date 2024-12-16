@@ -5,7 +5,9 @@ from sklearn.metrics import average_precision_score,roc_auc_score
 from scipy.spatial.distance import cdist
 from sklearn.cluster import KMeans
 import scipy as sc
-#import coreset as alc
+
+import warnings
+warnings.filterwarnings("ignore")
 
 random.seed(17)
 POS_LABEL = 1
@@ -22,10 +24,6 @@ def getW(clf):
     a = -w[0] / w[1]
     b = - (clf.intercept_[0]) / w[1]
 
-    # w = clf.coef_[0]
-    # b = clf.intercept_[0]
-    #
-    # W = np.hstack([w,b])
     W = np.hstack([a,b])
     return W
 
@@ -129,9 +127,12 @@ def AL_rand0(x_train, y_train, x_cand, clf, B):
     return idx
 
 def add_point(x_train, y_train, x_cand, y_cand):
+
+    y_train = np.reshape(y_train,(-1,1))
     xcandc = np.vstack([x_train, np.asarray(x_cand)])
     new_y = np.asarray(y_cand)
-    ycandc = np.vstack([np.asarray(y_train), new_y])
+    ycandc = np.vstack([y_train, new_y])
+    #ycandc = np.vstack([np.asarray(y_train), new_y])
     return xcandc, ycandc
 
 def remove_points(xcand,ycand,idx):
@@ -168,7 +169,7 @@ def AL_GAL_next_point(x_train, y_train, x_cand, ignore_idx, clf):
     for i in range(N):
         if i in ignore_idx:
             continue
-
+        y_train = np.reshape(y_train,(-1,1))
         xc = np.reshape(x_cand[i, :], (1, -1))
         xt, yt = add_point(x_train, y_train, xc, neg_label)
         clf.fit(xt, np.squeeze(yt))
@@ -200,6 +201,9 @@ def AL_GAL_next_point(x_train, y_train, x_cand, ignore_idx, clf):
     return idx, Mpred[idx],vecM[idx]
 
 def AL_GAL(xtrain, ytrain, xcand, clf, B):
+    # if len(ytrain.shape) == 1:
+    #     #ytrain = ytrain.ravel()
+    #     ytrain=ytrain.reshape(-1,1)
     ignore_idx = []
     scores = []
     xt = xtrain
@@ -227,22 +231,25 @@ def AL_entropy(xtrain, ytrain, xcand, clf, B):
 
 
 def kmeans_plus_batch(xcand, K):
-    kmeans = KMeans(init="k-means++",
-                    n_clusters=K,
-                    n_init=15) #was 5
 
-    kmeans.fit(xcand)
-    centers = kmeans.cluster_centers_
-    Dist = cdist(xcand, centers)
-    indices = np.argmin(Dist,axis=0)
+    if K == 1:
+        mean_vector = np.mean(xcand, axis=0)
+        distances = np.linalg.norm(xcand - mean_vector, axis=1)
+        return [np.argmin(distances)]
+    else:
+        kmeans = KMeans(init="k-means++",
+                    n_clusters=K,
+                    n_init=15)
+
+        kmeans.fit(xcand)
+        centers = kmeans.cluster_centers_
+        Dist = cdist(xcand, centers)
+        indices = np.argmin(Dist,axis=0)
     indices = list(indices)
     return indices
 
 def AL_diversity(xtrain, ytrain, xcand, clf, B):
 
-    # dMatrix = cdist(xcand, xtrain)
-    # max_dist = np.max(dMatrix,axis=1)
-    # idx = np.argsort(max_dist)[::-1][:B]
     idx = kmeans_plus_batch(xcand, B)
 
     return idx
@@ -310,27 +317,3 @@ def AL_cod(xtrain, ytrain, xcand, clf, B):
 
     return idx
 
-def AL_coreset(xtrain, ytrain, xcand, clf, B):
-
-        # geo = glc.GeometricDecomposition(x, 200, K, 0.5)
-        # coreset = geo.compute()
-
-    lwcs = alc.LightweightCoreset(xcand, B, 0.1)
-    lwcs._compute_m()
-
-    coreset, weights = lwcs._compute_coreset()
-    idx = np.argsort(weights)
-    idx = idx[-B:]
-    coreset = coreset[idx,:]
-    dMatrix = sc.spatial.distance.cdist(xcand, coreset)
-    indices,_ = np.where(dMatrix==0)
-
-
-    #---------------
-    # km = algorithms.WeightedKMeans(n_clusters=K, n_iter=10)
-    # km.fit(x)
-    # y, dists = km.predict(x)
-    #----------------
-
-
-    return indices
