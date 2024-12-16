@@ -1,4 +1,7 @@
 # GreedyAL
+
+main_AL_cifar.py demonstrates IIR on cifar10 <br>
+main_AL_2Dpoints.py demonstrates AL in a toy example<br><br> <br>
 Greedy Active Learning Method
 ![Alg1_2](https://github.com/user-attachments/assets/df5da906-3378-406a-a288-b110a9526bb8)
 Main flow of the AL cycle. The top-K candidate set at cycle t determined by the classifier $C_t(\theta)$,
