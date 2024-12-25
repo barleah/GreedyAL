@@ -45,7 +45,7 @@ class IndexedDataset(Dataset):
 
 def extract_features(dataset):
     # Create a DataLoader from the dataset
-    dataloader = DataLoader(dataset, batch_size=32, shuffle=True, generator=generator)
+    dataloader = DataLoader(dataset, batch_size=32, shuffle=False, generator=generator)
     features = []
     labels = []
     indices = []
@@ -261,7 +261,7 @@ def plot_average_precision(ap_vec_list, exp_list=None, prec_k=10):
         auc = np.sum(ap_vec_list, axis=1)
         plt.figure(figsize=(8, 6))
         for i, ap_vec in enumerate(ap_vec_list):
-            plt.plot(np.arange(1, len(ap_vec) + 1), ap_vec, label=f'{exp_list[i]}: AUC={auc[i]:.2f}')   
+            plt.plot(np.arange(1, len(ap_vec) + 1), ap_vec, marker='o', markersize=4, label=f'{exp_list[i]}: AUC={auc[i]:.2f}')
        
         plt.xlabel("Iterations")
         plt.ylabel("Precision@K")
@@ -298,22 +298,12 @@ if __name__ == "__main__":
             'B': 3,
             'iterations': 7,
             'K': 200,
-            'precision_at_k': 200,
+            'precision_at_k': 15,
             'top_results': 15,
-            'n_positive_labels': 5,
-            'n_negative_labels': 5,
+            'n_positive_labels': 4,
+            'n_negative_labels': 4,
         }
 
-    # metadata = {
-    #         'query_index': 40,
-    #         'B': 1,
-    #         'iterations': 20,
-    #         'K': 200,
-    #         'precision_at_k': 200,
-    #         'top_results': 15,
-    #         'n_positive_labels': 5,
-    #         'n_negative_labels': 5,
-    #     }
 
     # Extract features and labels for the dataset
     if os.path.exists(features_file):

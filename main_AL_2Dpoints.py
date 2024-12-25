@@ -120,7 +120,7 @@ def main():
     plt.plot(xline_gt, yline_gt, "k-.", linewidth=2, label='classifier with all data')
     plt.plot(xline_start, yline_start, "c--", linewidth=3, label='classifier before selection')
     plt.plot(xline_div, yline_div, "c-", linewidth=3, label='classifier after selection')
-    #plt.title('dW={:.2f} diversity={:.2f} uncertainty={:.2f}'.format(dW_div, div_div, unc_div))
+
     plt.title('Diversity: Kmeans++')
     plt.legend()
     plt.show()

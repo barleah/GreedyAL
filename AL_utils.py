@@ -19,6 +19,7 @@ def Entropy(P):
     H *= -1
     return H
 
+
 def getW(clf):
     w = clf.coef_[0]
     a = -w[0] / w[1]
@@ -66,6 +67,7 @@ def prepare_data(nTrain,nCand):
 
     return x_train,y_train, x_cand, y_cand
 
+
 def prepare_line(X,Y,y_min,y_max,clf,xcand,ycand, sel_idx=None, clf_gt=None, clf_start=None):
 
 
@@ -110,13 +112,13 @@ def prepare_line(X,Y,y_min,y_max,clf,xcand,ycand, sel_idx=None, clf_gt=None, clf
 
     return xline,yline,ap,delta_W,Div,uncertainty
 
+
 def AL_rand(xcand, B):
     N = xcand.shape[0]
     arr = np.arange(N)
     random.shuffle(arr)
     idx = arr[0:B]
     return idx
-
 
 
 def AL_rand0(x_train, y_train, x_cand, clf, B):
@@ -126,14 +128,16 @@ def AL_rand0(x_train, y_train, x_cand, clf, B):
     idx = arr[0:B]
     return idx
 
+
 def add_point(x_train, y_train, x_cand, y_cand):
 
     y_train = np.reshape(y_train,(-1,1))
     xcandc = np.vstack([x_train, np.asarray(x_cand)])
     new_y = np.asarray(y_cand)
     ycandc = np.vstack([y_train, new_y])
-    #ycandc = np.vstack([np.asarray(y_train), new_y])
+
     return xcandc, ycandc
+
 
 def remove_points(xcand,ycand,idx):
    N = np.arange(xcand.shape[0])
@@ -143,15 +147,11 @@ def remove_points(xcand,ycand,idx):
    return new_xcand, new_ycand
 
 
-
 def AL_GAL_next_point(x_train, y_train, x_cand, ignore_idx, clf):
 
     neg_label = NEG_LABEL
     pos_label = POS_LABEL
     slope_only=False
-
-    #if len(set(list(y_train))) <= 1:
-
 
     clf.fit(x_train, y_train)
     if slope_only:
@@ -200,32 +200,29 @@ def AL_GAL_next_point(x_train, y_train, x_cand, ignore_idx, clf):
     idx = np.argmax(vecM)
     return idx, Mpred[idx],vecM[idx]
 
+
 def AL_GAL(xtrain, ytrain, xcand, clf, B):
-    # if len(ytrain.shape) == 1:
-    #     #ytrain = ytrain.ravel()
-    #     ytrain=ytrain.reshape(-1,1)
+
     ignore_idx = []
     scores = []
     xt = xtrain
     yt = ytrain
     for i in range(B):
         idx,pl, M = AL_GAL_next_point(xt, yt, xcand, ignore_idx, clf)
-        #print(idx)
+
         xt, yt = add_point(xt, yt, xcand[idx], pl)
         ignore_idx.append(idx)
         scores.append(M)
 
-
     return ignore_idx,scores
+
 
 def AL_entropy(xtrain, ytrain, xcand, clf, B):
     clf.fit(xtrain, ytrain)
     P = clf._predict_proba_lr(xcand)
     P = P[:,1]
-    #entropyVec = -( 1.0 * (P * (np.log2(P)) + (1.0 - P) * np.log2(1.0 - P)) )
     entropyVec = Entropy(P)
     idx = np.argsort(entropyVec)[::-1][:B]
-
 
     return idx
 
@@ -238,8 +235,9 @@ def kmeans_plus_batch(xcand, K):
         return [np.argmin(distances)]
     else:
         kmeans = KMeans(init="k-means++",
-                    n_clusters=K,
-                    n_init=15)
+                        n_clusters=K,
+                        n_init=15,
+                        random_state=10)
 
         kmeans.fit(xcand)
         centers = kmeans.cluster_centers_
@@ -247,6 +245,7 @@ def kmeans_plus_batch(xcand, K):
         indices = np.argmin(Dist,axis=0)
     indices = list(indices)
     return indices
+
 
 def AL_diversity(xtrain, ytrain, xcand, clf, B):
 
@@ -282,6 +281,7 @@ def AL_maxmin_interp(xtrain, ytrain, xcand, clf, B):
     idx = np.argsort(vecM)[::-1][:B]
     return idx
 
+
 def AL_ranked(xtrain, ytrain, xcand, clf, B):
         similarity_score = 0.2
         nUnlabeled = xcand.shape[0]
@@ -295,6 +295,7 @@ def AL_ranked(xtrain, ytrain, xcand, clf, B):
         idx = np.argsort(scores)[::-1][:B]
 
         return idx
+
 
 def AL_cod(xtrain, ytrain, xcand, clf, B):
 
