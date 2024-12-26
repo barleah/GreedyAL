@@ -1,4 +1,7 @@
 # GreedyAL
+The paper:
+https://arxiv.org/abs/2412.02310
+
 
 main_AL_cifar.py demonstrates IIR on cifar10 <br>
 main_AL_2Dpoints.py demonstrates AL in a toy example<br><br> <br>
