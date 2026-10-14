@@ -1,7 +1,8 @@
 # GreedyAL
-The paper:
-https://arxiv.org/abs/2412.02310
-youtube: https://www.youtube.com/watch?v=bHDARDpu8Fg
+
+The paper: https://arxiv.org/abs/2412.02310
+
+[![YouTube](https://img.shields.io/badge/YouTube-Watch-red?logo=youtube&logoColor=white)](https://www.youtube.com/watch?v=bHDARDpu8Fg)
 
 
 main_AL_cifar.py demonstrates IIR on cifar10 <br>
