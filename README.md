@@ -2,7 +2,7 @@
 
 The paper: https://arxiv.org/abs/2412.02310
 
-[![YouTube](https://img.shields.io/badge/YouTube-Watch-red?logo=youtube&logoColor=white)](https://www.youtube.com/watch?v=bHDARDpu8Fg)
+[![YouTube](https://img.shields.io/badge/-YouTube-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://www.youtube.com/watch?v=bHDARDpu8Fg) A short video explaining the method
 
 
 main_AL_cifar.py demonstrates IIR on cifar10 <br>
